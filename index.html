@@ -1,33 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Will You Be My Valentine miss Pooja?</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Letter for My lady, Pooja</title>
 
   <style>
     body {
       margin: 0;
       min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
-      padding: 20px;
     }
 
-    .container {
+    /* Envelope style */
+    #envelope {
+      width: 300px;
+      height: 200px;
+      background: #fff;
+      border: 2px solid #ff4d6d;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+      z-index: 3;
+    }
+
+    #envelope h2 {
+      margin: 0;
+      color: #ff4d6d;
+      font-size: 1.5rem;
+    }
+
+    #container {
+      display: none;
       text-align: center;
       background: rgba(255, 255, 255, 0.95);
       padding: 30px 20px;
       border-radius: 24px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-      position: relative;
-      z-index: 2;
       width: 100%;
       max-width: 400px;
+      position: relative;
+      z-index: 2;
     }
 
     h1 {
@@ -67,57 +91,75 @@
       resize: none;
     }
 
-    .hearts {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none; overflow: hidden; z-index: 1;
+    .hearts, .sadRain, .fireworks {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
     }
 
     .heart { position: absolute; color: #ff4d6d; font-size: 24px; animation: floatUp 4s linear forwards; }
+    .sad { position: absolute; font-size: 26px; animation: fallDown 3s linear forwards; }
+    .spark { position: absolute; font-size: 20px; animation: explode 1.2s ease-out forwards; }
 
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-800px) scale(1.6); opacity: 0; }
-    }
+    @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-800px) scale(1.6); opacity: 0; } }
+    @keyframes fallDown { 0% { transform: translateY(-50px); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
+    @keyframes explode { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
 
     .love-message { font-size: 1.3rem; color: #ff4d6d; margin-top: 18px; }
+    .dark-mode { background: #0f0f1a !important; filter: brightness(0.7); }
 
     @media (max-width: 480px) { .buttons { height: 140px; } }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>Will you be my Valentine? 💖</h1>
+  <!-- Envelope Screen -->
+  <div id="envelope" onclick="openLetter()">
+    <h2>To Pooja 💖</h2>
+    <p>Click to open your letter 💌</p>
+  </div>
 
+  <!-- Valentine Content -->
+  <div id="container">
+    <h1 id="mainTitle">Will you be my Valentine, Pooja? 💖</h1>
     <div class="buttons" id="buttonArea">
       <button class="yes" onclick="sayYes()">Yes</button>
       <button class="no" id="noBtn" onmouseover="moveNo()" onclick="sayNo()">No</button>
     </div>
 
-    <!-- YES message box -->
     <div id="yesSection" class="hidden">
-      <p>Yay!! You made my day my lady, would love to hear you write something about us down here, think it as a reply Hehe😉💌</p>
+      <p>Yay!! You made my day cutie, aba kei lekhdeunata mero lagi.😉💌</p>
       <textarea id="yesMsg" placeholder="Write something lovely..."></textarea><br>
       <button onclick="submitYes()">Send</button>
     </div>
 
-    <!-- NO reason box -->
-    <div id="noSection" class="hidden">
-      <p>Eh lala😢 </p>
-      <textarea id="noMsg" placeholder="Tell me the reason..."></textarea><br>
-      <button onclick="submitNo()">Submit</button>
-    </div>
-
-    <div id="loveMsg" class="love-message hidden">Thank you for answering 💖</div>
+    <div id="loveMsg" class="love-message hidden"> Hawa Aurat, yeti dukhagarna khusi No lai💞</div>
   </div>
 
   <div class="hearts" id="hearts"></div>
+  <div class="sadRain" id="sadRain"></div>
+  <div class="fireworks" id="fireworks"></div>
+
+  <audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
-    // 🔹 Replace with your own free endpoint later
     const ENDPOINT = "https://formspree.io/f/mgolwqqb";
 
-    function sendOnline(answer, message) {
+    function openLetter() {
+      document.getElementById('envelope').style.opacity = '0';
+      document.getElementById('envelope').style.transform = 'scale(0.5)';
+      setTimeout(() => {
+        document.getElementById('envelope').style.display = 'none';
+        document.getElementById('container').style.display = 'block';
+      }, 600);
+    }
+
+    function sendOnline(answer, message="") {
       fetch(ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -127,8 +169,8 @@
 
     function sayYes() {
       document.getElementById("yesSection").classList.remove("hidden");
-
-      for (let i = 0; i < 30; i++) {
+      document.getElementById("bgMusic").play();
+      for (let i = 0; i < 40; i++) {
         const heart = document.createElement("div");
         heart.className = "heart";
         heart.innerHTML = "❤";
@@ -144,26 +186,29 @@
     function submitYes() {
       const msg = document.getElementById("yesMsg").value.trim();
       if (!msg) return alert("Please write a message 💌");
-
       sendOnline("YES", msg);
       finish();
     }
 
     function sayNo() {
-      document.getElementById("noSection").classList.remove("hidden");
-    }
-
-    function submitNo() {
-      const msg = document.getElementById("noMsg").value.trim();
-      if (!msg) return alert("Please tell the reason 😢");
-
-      sendOnline("NO", msg);
+      sendOnline("NO");
+      document.body.classList.add("dark-mode");
+      document.getElementById("mainTitle").innerText = "Maybe someday… 💔";
+      for (let i = 0; i < 30; i++) {
+        const sad = document.createElement("div");
+        sad.className = "sad";
+        sad.innerHTML = "😢";
+        sad.style.left = Math.random() * 100 + "vw";
+        sad.style.animationDuration = (2 + Math.random()) + "s";
+        document.getElementById("sadRain").appendChild(sad);
+        setTimeout(() => sad.remove(), 3000);
+      }
       finish();
     }
 
     function finish() {
       document.getElementById("yesSection").classList.add("hidden");
-      document.getElementById("noSection").classList.add("hidden");
+      document.getElementById("buttonArea").classList.add("hidden");
       document.getElementById("loveMsg").classList.remove("hidden");
     }
 
@@ -179,4 +224,3 @@
   </script>
 </body>
 </html>
-
